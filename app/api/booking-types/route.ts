@@ -12,6 +12,7 @@ const schema = z.object({
   timezone: z.string().min(3),
   startHour: z.coerce.number().int().min(0).max(23),
   endHour: z.coerce.number().int().min(1).max(24),
+  includeWeekends: z.boolean().default(false),
 });
 
 export async function POST(request: Request) {
@@ -23,8 +24,14 @@ export async function POST(request: Request) {
   }
   const user = await prisma.user.findUniqueOrThrow({ where: { email: session.user.email } });
   try {
+    const { includeWeekends, ...data } = parsed.data;
     const bookingType = await prisma.bookingType.create({
-      data: { ...parsed.data, description: parsed.data.description || null, userId: user.id },
+      data: {
+        ...data,
+        description: data.description || null,
+        weekdays: includeWeekends ? [1, 2, 3, 4, 5, 6, 7] : [1, 2, 3, 4, 5],
+        userId: user.id,
+      },
     });
     return NextResponse.json(bookingType, { status: 201 });
   } catch {

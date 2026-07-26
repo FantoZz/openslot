@@ -8,7 +8,8 @@ export function CreateBookingType() {
   const [pending, setPending] = useState(false);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setPending(true); setError("");
-    const data = Object.fromEntries(new FormData(event.currentTarget));
+    const formData = new FormData(event.currentTarget);
+    const data = { ...Object.fromEntries(formData), includeWeekends: formData.has("includeWeekends") };
     const response = await fetch("/api/booking-types", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(data) });
     const result = await response.json(); setPending(false);
     if (!response.ok) return setError(result.error);
@@ -26,6 +27,7 @@ export function CreateBookingType() {
       <label>Начало рабочего дня<input name="startHour" type="number" min="0" max="23" defaultValue="9" /></label>
       <label>Конец рабочего дня<input name="endHour" type="number" min="1" max="24" defaultValue="18" /></label>
     </div>
+    <label className="checkbox"><input name="includeWeekends" type="checkbox" />Включать субботу и воскресенье</label>
     {error && <span className="error">{error}</span>}
     <button disabled={pending}>{pending ? "Создаём…" : "Создать ссылку"}</button>
   </form>;
