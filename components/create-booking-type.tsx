@@ -9,12 +9,13 @@ export function CreateBookingType() {
   const [includeWeekends, setIncludeWeekends] = useState(false);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setPending(true); setError("");
-    const formData = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    const formData = new FormData(form);
     const data = { ...Object.fromEntries(formData), includeWeekends: formData.has("includeWeekends") };
     const response = await fetch("/api/booking-types", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(data) });
     const result = await response.json(); setPending(false);
     if (!response.ok) return setError(result.error);
-    event.currentTarget.reset(); setIncludeWeekends(false); router.refresh();
+    form.reset(); setIncludeWeekends(false); router.refresh();
   }
   return <form onSubmit={submit}>
     <label>Назва<input name="title" required placeholder="Співбесіда з кандидатом" /></label>
