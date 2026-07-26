@@ -5,6 +5,11 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 export default function OpenGraphImage() {
+  const logoUrl = new URL(
+    "/matas-mark.svg",
+    process.env.NEXTAUTH_URL || "https://openslot.matasuniversity.com",
+  ).toString();
+
   return new ImageResponse(
     (
       <div
@@ -62,22 +67,17 @@ export default function OpenGraphImage() {
             Оберіть зручний час і забронюйте зустріч
           </div>
         </div>
-        <div
+        <img
+          alt="MATAS University"
+          src={logoUrl}
+          width="178"
+          height="206"
           style={{
             width: "178px",
-            height: "178px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: "50%",
-            background: "#426bbd",
-            color: "#ffffff",
-            fontSize: "92px",
-            fontWeight: 800,
+            height: "206px",
+            objectFit: "contain",
           }}
-        >
-          M
-        </div>
+        />
       </div>
     ),
     size,
