@@ -64,6 +64,8 @@ model BookingType {
   timezone    String    @default("Europe/Kyiv")
   startHour   Int       @default(9)
   endHour     Int       @default(18)
+  weekendStartHour Int  @default(10)
+  weekendEndHour   Int  @default(16)
   weekdays    Int[]     @default([1, 2, 3, 4, 5])
   active      Boolean   @default(true)
   createdAt   DateTime  @default(now())

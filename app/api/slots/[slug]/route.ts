@@ -25,7 +25,18 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
     ];
     return NextResponse.json({
       timezone: type.timezone,
-      slots: buildSlots({ from, days: type.availabilityDays, durationMin: type.durationMin, timezone: type.timezone, startHour: type.startHour, endHour: type.endHour, weekdays: type.weekdays, busy }),
+      slots: buildSlots({
+        from,
+        days: type.availabilityDays,
+        durationMin: type.durationMin,
+        timezone: type.timezone,
+        startHour: type.startHour,
+        endHour: type.endHour,
+        weekendStartHour: type.weekendStartHour,
+        weekendEndHour: type.weekendEndHour,
+        weekdays: type.weekdays,
+        busy,
+      }),
     });
   } catch (error) {
     return calendarApiError(error);

@@ -1,106 +1,113 @@
 # OpenSlot
 
-Сервис записи на встречу через Google Calendar. Организатор создаёт тип встречи и получает публичную ссылку. Гость видит только свободные окна; после бронирования событие с Google Meet появляется в основном календаре организатора, а приглашение уходит гостю.
+Планувальник зустрічей MATAS University з інтеграцією Google Calendar і Google Meet.
+Організатор створює формат зустрічі та ділиться публічним посиланням. Кожен гість
+обирає окремий вільний слот, після чого подія з Google Meet додається до календаря.
 
-## Что уже есть в каркасе
+Production: [https://openslot.matasuniversity.com](https://openslot.matasuniversity.com)
 
-- вход организатора через Google OAuth;
-- создание публичных типов встреч (название, описание, длительность, часы работы, часовой пояс);
-- проверка занятости основного Google Calendar на 14 дней;
-- защита от повторной брони непосредственно перед созданием события;
-- создание события, Google Meet и email-приглашения;
-- PostgreSQL через Prisma и локальный Docker Compose.
+## Можливості
 
-## Локальный запуск
+- вхід організатора через Google OAuth;
+- необмежена кількість бронювань через одне посилання;
+- автоматична перевірка зайнятості Google Calendar;
+- захист від подвійного бронювання;
+- створення події, Google Meet та email-запрошення;
+- окремий горизонт доступності: сьогодні, 2, 3, 7 або 14 днів;
+- окремі години роботи для буднів і вихідних;
+- автоматична адреса посилання, якщо організатор не задав її вручну;
+- копіювання публічного посилання з панелі;
+- безпечне видалення сторінки без видалення вже запланованих подій;
+- український інтерфейс і бренд MATAS University;
+- favicon та Open Graph-прев’ю для месенджерів.
 
-Требования: Node.js 20+, Docker, аккаунт Google.
+## Як працює горизонт доступності
+
+`Доступні слоти наперед` завжди відраховуються від дня, коли гість відкрив сторінку
+бронювання. Наприклад, формат із горизонтом `3 дні` сьогодні покаже слоти на сьогодні
+і два наступні календарні дні. Якщо відкрити те саме посилання через місяць, відлік
+почнеться заново від тієї дати. Дні, які не входять до робочого розкладу, пропускаються.
+
+## Стек
+
+- Next.js 15;
+- PostgreSQL 16;
+- Prisma;
+- NextAuth;
+- Google Calendar API;
+- Docker Compose;
+- Cloudflare Tunnel.
+
+## Локальний запуск
+
+Потрібні Node.js 20+, Docker і Google OAuth-клієнт.
 
 ```bash
 npm install
 cp .env.example .env
-docker compose up -d
+docker compose up -d postgres
 npm run db:push
 npm run dev
 ```
 
-До запуска заполните Google-переменные в `.env` по инструкции ниже. Сайт откроется на `http://localhost:3000`.
+Сайт буде доступний на `http://localhost:3000`.
 
-## Подключение Google Calendar и Meet
-
-Google Calendar API подключается к проекту, а не к Gmail отдельно. Тот же Google OAuth даёт вход, доступ к календарю и право создавать Meet-конференции.
-
-1. Откройте [Google Cloud Console](https://console.cloud.google.com/) и создайте новый проект.
-2. В **APIs & Services → Library** включите **Google Calendar API**.
-3. В **Google Auth Platform / OAuth consent screen** настройте приложение:
-   - тип аудитории — External (если это не Workspace-приложение организации);
-   - добавьте свой email как test user, пока приложение в режиме Testing;
-   - добавьте scope `https://www.googleapis.com/auth/calendar`.
-4. В **Credentials → Create credentials → OAuth client ID** выберите **Web application**.
-5. Добавьте Authorized redirect URI:
-   - локально: `http://localhost:3000/api/auth/callback/google`;
-   - после деплоя: `https://ВАШ-ДОМЕН/api/auth/callback/google`.
-6. Скопируйте Client ID и Client secret в `.env`:
+## Змінні середовища
 
 ```env
-GOOGLE_CLIENT_ID="...apps.googleusercontent.com"
-GOOGLE_CLIENT_SECRET="..."
-NEXTAUTH_SECRET="результат-команды-ниже"
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+POSTGRES_PASSWORD=
+WEB_PORT=3002
 ```
 
-Секрет создаётся так:
+Секрети зберігаються тільки в `.env`. Файл `.env` не можна комітити.
 
-```bash
-openssl rand -base64 32
+Для локального OAuth додайте redirect URI:
+
+```text
+http://localhost:3000/api/auth/callback/google
 ```
 
-Важно: при первом входе разрешите доступ к календарю. Refresh token сохраняется в БД и нужен для работы публичной страницы, когда организатор не находится на сайте. `.env` и содержимое БД нельзя коммитить.
+Для production:
 
-## Как привязать проект к вашему GitHub
-
-### Что нужно сделать вам
-
-1. Создайте на GitHub пустой приватный репозиторий, например `openslot`. Не добавляйте README, `.gitignore` или лицензию — они уже есть здесь.
-2. Сообщите мне **URL репозитория** вида `https://github.com/USERNAME/openslot.git`.
-3. Авторизуйте GitHub CLI на компьютере командой `gh auth login` или настройте SSH-ключ. Пароль и personal access token мне в чат не присылайте.
-4. Напишите, можно ли мне создать первый commit и push. После явного разрешения я это сделаю.
-
-Если хотите сделать самостоятельно:
-
-```bash
-git init
-git add .
-git commit -m "Initial OpenSlot MVP"
-git branch -M main
-git remote add origin https://github.com/USERNAME/openslot.git
-git push -u origin main
+```text
+https://openslot.matasuniversity.com/api/auth/callback/google
 ```
 
-## Что прислать для следующего этапа
+Google Calendar API має бути увімкнений, а OAuth-клієнт повинен мати scope:
 
-Без секретов:
-
-- GitHub repository URL;
-- желаемое название сервиса и домен;
-- ваш рабочий часовой пояс и расписание (сейчас: будни, 09:00–18:00, `Europe/Kyiv`);
-- где разворачивать: Vercel + Neon/Supabase или другой хостинг;
-- нужны ли буферы между встречами, отмена/перенос, несколько календарей и вопросы гостю;
-- логотип/цвета или примеры понравившихся сайтов, если нужен фирменный дизайн.
-
-Секреты `GOOGLE_CLIENT_SECRET`, `NEXTAUTH_SECRET`, пароли и токены храните только в `.env` локально и в Environment Variables хостинга.
-
-## Ограничения текущего MVP
-
-- один основной Google Calendar на организатора;
-- рабочие дни пока понедельник–пятница;
-- шаг слотов равен длительности встречи;
-- нет отмены, переноса, буферов, лимитов в день и email-напоминаний;
-- для коммерческого публичного запуска Google может потребовать OAuth verification из-за calendar scope.
+```text
+https://www.googleapis.com/auth/calendar
+```
 
 ## Production на HomePI4YF
 
-Зарезервированный адрес: `https://openslot.elephantrobotics.store`, внутренний порт: `3002`.
+Проєкт працює в `/home/yfs/projects/openslot`. Зарезервований порт — `3002`.
+Зовнішній HTTPS-трафік надходить через Cloudflare Tunnel.
 
-1. Скопируйте `.env.example` в `.env` и заполните Google OAuth-переменные и секреты.
-2. В Google OAuth добавьте redirect URI `https://openslot.elephantrobotics.store/api/auth/callback/google`.
-3. Запустите приложение: `docker compose up -d --build`.
-4. В Cloudflare Tunnel добавьте Public Hostname `openslot.elephantrobotics.store`, направленный на HTTP-сервис приложения на порту `3002`.
+Оновлення:
+
+```bash
+cd ~/projects/openslot
+git pull
+docker compose build app
+docker compose exec -T postgres psql -U postgres -d openslot < prisma/migrations/20260726_add_weekend_hours/migration.sql
+docker compose up -d app
+docker compose logs --tail=100 app
+```
+
+Перед змінами:
+
+```bash
+~/server/scripts/backup-project openslot
+```
+
+## Важливо
+
+- не комітьте `.env`, OAuth secrets або дані PostgreSQL;
+- не змінюйте порт без оновлення `~/server/docs/ports.md`;
+- не публікуйте додаткові порти — використовуйте наявний Cloudflare Tunnel;
+- перед production-деплоєм перевіряйте `npm run build`.

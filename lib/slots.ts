@@ -9,6 +9,8 @@ export function buildSlots(input: {
   timezone: string;
   startHour: number;
   endHour: number;
+  weekendStartHour: number;
+  weekendEndHour: number;
   weekdays: number[];
   busy: Busy[];
 }) {
@@ -17,8 +19,11 @@ export function buildSlots(input: {
   for (let offset = 0; offset < input.days; offset++) {
     const day = input.from.setZone(input.timezone).startOf("day").plus({ days: offset });
     if (!input.weekdays.includes(day.weekday)) continue;
-    let cursor = day.set({ hour: input.startHour });
-    const limit = day.set({ hour: input.endHour });
+    const isWeekend = day.weekday >= 6;
+    const startHour = isWeekend ? input.weekendStartHour : input.startHour;
+    const endHour = isWeekend ? input.weekendEndHour : input.endHour;
+    let cursor = day.set({ hour: startHour });
+    const limit = day.set({ hour: endHour });
     while (cursor.plus({ minutes: input.durationMin }) <= limit) {
       const start = cursor.toUTC();
       const end = start.plus({ minutes: input.durationMin });
