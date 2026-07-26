@@ -11,7 +11,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
     const type = await prisma.bookingType.findUnique({ where: { slug } });
     if (!type?.active) return NextResponse.json({ error: "Not found" }, { status: 404 });
     const from = DateTime.now().setZone(type.timezone).startOf("day");
-    const until = from.plus({ days: 14 });
+    const until = from.plus({ days: type.availabilityDays });
     const [googleBusy, bookings] = await Promise.all([
       getBusy(type.userId, from.toJSDate(), until.toJSDate()),
       prisma.booking.findMany({
@@ -25,7 +25,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
     ];
     return NextResponse.json({
       timezone: type.timezone,
-      slots: buildSlots({ from, days: 14, durationMin: type.durationMin, timezone: type.timezone, startHour: type.startHour, endHour: type.endHour, weekdays: type.weekdays, busy }),
+      slots: buildSlots({ from, days: type.availabilityDays, durationMin: type.durationMin, timezone: type.timezone, startHour: type.startHour, endHour: type.endHour, weekdays: type.weekdays, busy }),
     });
   } catch (error) {
     return calendarApiError(error);

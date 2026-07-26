@@ -23,6 +23,7 @@ export function CreateBookingType() {
       <label>Длительность<select name="durationMin" defaultValue="60"><option value="30">30 минут</option><option value="45">45 минут</option><option value="60">1 час</option><option value="90">1,5 часа</option></select></label>
       <label>Часовой пояс<input name="timezone" defaultValue="Europe/Kyiv" /></label>
     </div>
+    <label>Доступные слоты вперёд<select name="availabilityDays" defaultValue="14"><option value="7">7 дней</option><option value="14">14 дней</option><option value="30">30 дней</option><option value="60">60 дней</option><option value="90">90 дней</option></select></label>
     <div className="row">
       <label>Начало рабочего дня<input name="startHour" type="number" min="0" max="23" defaultValue="9" /></label>
       <label>Конец рабочего дня<input name="endHour" type="number" min="1" max="24" defaultValue="18" /></label>

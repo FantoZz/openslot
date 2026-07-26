@@ -9,6 +9,7 @@ const schema = z.object({
   slug: z.string().regex(/^[a-z0-9-]+$/).min(3).max(60),
   description: z.string().max(1000).optional(),
   durationMin: z.coerce.number().int().min(15).max(480),
+  availabilityDays: z.coerce.number().int().min(1).max(90),
   timezone: z.string().min(3),
   startHour: z.coerce.number().int().min(0).max(23),
   endHour: z.coerce.number().int().min(1).max(24),

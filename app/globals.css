@@ -12,13 +12,14 @@ p { color:var(--muted); line-height:1.65; }
 .button,button { border:0; border-radius:12px; padding:13px 18px; background:var(--brand); color:white; font-weight:700; cursor:pointer; text-decoration:none; display:inline-block; font:inherit; }
 .button.secondary { background:white; color:var(--ink); border:1px solid var(--line); }
 .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:18px; }
-.card { background:rgba(255,255,255,.86); border:1px solid var(--line); border-radius:20px; padding:24px; box-shadow:0 14px 45px rgba(30,70,52,.06); }
+.card { min-width:0; background:rgba(255,255,255,.86); border:1px solid var(--line); border-radius:20px; padding:24px; box-shadow:0 14px 45px rgba(30,70,52,.06); }
 .card h3 { margin:0 0 8px; }
-form { display:grid; gap:15px; }
+form { display:grid; min-width:0; gap:15px; }
 label { display:grid; gap:7px; color:var(--muted); font-size:14px; font-weight:650; }
 input,textarea,select { width:100%; padding:12px 13px; border:1px solid #cbd6d0; border-radius:10px; background:white; color:var(--ink); font:inherit; }
 .row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-.slot-days { display:grid; grid-auto-flow:column; grid-auto-columns:minmax(150px,1fr); gap:12px; overflow-x:auto; padding:2px 2px 10px; }
+.slot-picker { min-width:0; max-width:100%; }
+.slot-days { display:grid; width:100%; max-width:100%; min-width:0; grid-auto-flow:column; grid-auto-columns:150px; gap:12px; overflow-x:auto; overscroll-behavior-inline:contain; padding:2px 2px 12px; }
 .slot-day { min-width:0; }
 .slot-day h4 { margin:0 0 9px; text-transform:capitalize; color:var(--muted); font-size:14px; }
 .slot-times { display:grid; gap:8px; }
