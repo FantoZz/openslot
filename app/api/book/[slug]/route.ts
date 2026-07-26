@@ -17,19 +17,19 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
   try {
     const { slug } = await params;
     const parsed = schema.safeParse(await request.json());
-    if (!parsed.success) return NextResponse.json({ error: "Проверьте данные" }, { status: 400 });
+    if (!parsed.success) return NextResponse.json({ error: "Перевірте дані" }, { status: 400 });
     const type = await prisma.bookingType.findUnique({ where: { slug }, include: { user: true } });
     if (!type?.active) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
     const start = DateTime.fromISO(parsed.data.startsAt).toUTC();
     const end = start.plus({ minutes: type.durationMin });
-    if (start <= DateTime.utc()) return NextResponse.json({ error: "Это время уже прошло" }, { status: 409 });
+    if (start <= DateTime.utc()) return NextResponse.json({ error: "Цей час уже минув" }, { status: 409 });
 
     const [busy, existing] = await Promise.all([
       getBusy(type.userId, start.toJSDate(), end.toJSDate()),
       prisma.booking.findFirst({ where: { bookingType: { userId: type.userId }, startsAt: { lt: end.toJSDate() }, endsAt: { gt: start.toJSDate() } } }),
     ]);
-    if (busy.length || existing) return NextResponse.json({ error: "Это время только что заняли. Выберите другое." }, { status: 409 });
+    if (busy.length || existing) return NextResponse.json({ error: "Цей час щойно зайняли. Оберіть інший." }, { status: 409 });
 
     const calendar = await calendarForUser(type.userId);
     const event = await calendar.events.insert({
@@ -38,7 +38,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
       sendUpdates: "all",
       requestBody: {
         summary: `${type.title} — ${parsed.data.guestName}`,
-        description: [type.description, parsed.data.notes && `Комментарий гостя: ${parsed.data.notes}`].filter(Boolean).join("\n\n"),
+        description: [type.description, parsed.data.notes && `Коментар гостя: ${parsed.data.notes}`].filter(Boolean).join("\n\n"),
         start: { dateTime: start.toISO()!, timeZone: type.timezone },
         end: { dateTime: end.toISO()!, timeZone: type.timezone },
         attendees: [{ email: parsed.data.guestEmail, displayName: parsed.data.guestName }],
@@ -63,7 +63,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
     } catch (error) {
       console.error("Failed to save booking", error);
       if (event.data.id) await calendar.events.delete({ calendarId: "primary", eventId: event.data.id }).catch(() => undefined);
-      return NextResponse.json({ error: "Не удалось сохранить бронь" }, { status: 409 });
+      return NextResponse.json({ error: "Не вдалося зберегти бронювання" }, { status: 409 });
     }
   } catch (error) {
     return calendarApiError(error);

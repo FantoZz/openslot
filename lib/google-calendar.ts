@@ -7,7 +7,7 @@ export async function calendarForUser(userId: string) {
     where: { userId, provider: "google" },
   });
   if (!account?.refresh_token) {
-    throw new Error("Google Calendar не подключён. Выйдите и войдите снова, разрешив доступ к календарю.");
+    throw new Error("Google Calendar не підключено. Вийдіть і ввійдіть знову, дозволивши доступ до календаря.");
   }
 
   const auth = new OAuth2Client(

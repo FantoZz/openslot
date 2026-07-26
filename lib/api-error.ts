@@ -18,7 +18,7 @@ export function calendarApiError(error: unknown) {
     return NextResponse.json(
       {
         error:
-          "Google Calendar временно недоступен: организатору нужно включить Calendar API в Google Cloud.",
+          "Google Calendar тимчасово недоступний: організатору потрібно ввімкнути Calendar API у Google Cloud.",
         code: "CALENDAR_API_DISABLED",
       },
       { status: 503 },
@@ -29,7 +29,7 @@ export function calendarApiError(error: unknown) {
     return NextResponse.json(
       {
         error:
-          "Связь с календарём организатора истекла. Организатору нужно снова войти через Google.",
+          "Зв’язок із календарем організатора завершився. Організатору потрібно знову ввійти через Google.",
         code: "CALENDAR_REAUTH_REQUIRED",
       },
       { status: 503 },
@@ -38,7 +38,7 @@ export function calendarApiError(error: unknown) {
 
   return NextResponse.json(
     {
-      error: "Календарь организатора временно недоступен. Попробуйте позже.",
+      error: "Календар організатора тимчасово недоступний. Спробуйте пізніше.",
       code: "CALENDAR_UNAVAILABLE",
     },
     { status: 503 },

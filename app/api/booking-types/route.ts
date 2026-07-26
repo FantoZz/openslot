@@ -18,10 +18,10 @@ const schema = z.object({
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session?.user?.email) return NextResponse.json({ error: "Не авторизовано" }, { status: 401 });
   const parsed = schema.safeParse(await request.json());
   if (!parsed.success || parsed.data.startHour >= parsed.data.endHour) {
-    return NextResponse.json({ error: "Проверьте заполненные поля" }, { status: 400 });
+    return NextResponse.json({ error: "Перевірте заповнені поля" }, { status: 400 });
   }
   const user = await prisma.user.findUniqueOrThrow({ where: { email: session.user.email } });
   try {
@@ -36,6 +36,6 @@ export async function POST(request: Request) {
     });
     return NextResponse.json(bookingType, { status: 201 });
   } catch {
-    return NextResponse.json({ error: "Такая ссылка уже занята" }, { status: 409 });
+    return NextResponse.json({ error: "Таке посилання вже зайняте" }, { status: 409 });
   }
 }

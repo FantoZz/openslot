@@ -6,27 +6,27 @@ export function BookingForm({ slug, timezone, availabilityDays }: { slug:string;
   const [loading,setLoading] = useState(true); const [submitting,setSubmitting] = useState(false); const [error,setError] = useState(""); const [done,setDone] = useState<{meetUrl?:string} | null>(null);
   async function readJson(response: Response) {
     const text=await response.text();
-    if(!text) throw new Error("Сервер не вернул ответ. Попробуйте позже.");
-    try { return JSON.parse(text); } catch { throw new Error("Сервер вернул некорректный ответ. Попробуйте позже."); }
+    if(!text) throw new Error("Сервер не відповів. Спробуйте пізніше.");
+    try { return JSON.parse(text); } catch { throw new Error("Сервер повернув некоректну відповідь. Спробуйте пізніше."); }
   }
-  useEffect(() => { fetch(`/api/slots/${slug}`).then(async r => { const data=await readJson(r); if(!r.ok) throw new Error(data.error || "Не удалось загрузить свободное время"); setSlots(data.slots); }).catch(e=>setError(e instanceof Error ? e.message : "Не удалось загрузить свободное время")).finally(()=>setLoading(false)); }, [slug]);
+  useEffect(() => { fetch(`/api/slots/${slug}`).then(async r => { const data=await readJson(r); if(!r.ok) throw new Error(data.error || "Не вдалося завантажити вільний час"); setSlots(data.slots); }).catch(e=>setError(e instanceof Error ? e.message : "Не вдалося завантажити вільний час")).finally(()=>setLoading(false)); }, [slug]);
   async function submit(event:FormEvent<HTMLFormElement>) {
-    event.preventDefault(); setError(""); if(!selected) return setError("Сначала выберите время");
+    event.preventDefault(); setError(""); if(!selected) return setError("Спочатку оберіть час");
     setSubmitting(true);
     try {
       const body={...Object.fromEntries(new FormData(event.currentTarget)),startsAt:selected};
       const response=await fetch(`/api/book/${slug}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
-      const data=await readJson(response); if(!response.ok) throw new Error(data.error || "Не удалось забронировать встречу"); setDone(data);
+      const data=await readJson(response); if(!response.ok) throw new Error(data.error || "Не вдалося забронювати зустріч"); setDone(data);
     } catch(e) {
-      setError(e instanceof Error ? e.message : "Не удалось забронировать встречу");
+      setError(e instanceof Error ? e.message : "Не вдалося забронювати зустріч");
     } finally {
       setSubmitting(false);
     }
   }
-  if(done) return <div className="notice"><strong>Встреча забронирована.</strong><p>Приглашение отправлено на вашу почту.{done.meetUrl && <> <a href={done.meetUrl}>Открыть Google Meet</a>.</>}</p></div>;
-  const dayFormatter=new Intl.DateTimeFormat("ru",{timeZone:timezone,weekday:"short",day:"numeric",month:"short"});
+  if(done) return <div className="notice"><strong>Зустріч заброньовано.</strong><p>Запрошення надіслано на вашу пошту.{done.meetUrl && <> <a href={done.meetUrl}>Відкрити Google Meet</a>.</>}</p></div>;
+  const dayFormatter=new Intl.DateTimeFormat("uk",{timeZone:timezone,weekday:"short",day:"numeric",month:"short"});
   const dayKeyFormatter=new Intl.DateTimeFormat("en-CA",{timeZone:timezone,year:"numeric",month:"2-digit",day:"2-digit"});
-  const timeFormatter=new Intl.DateTimeFormat("ru",{timeZone:timezone,hour:"2-digit",minute:"2-digit"});
+  const timeFormatter=new Intl.DateTimeFormat("uk",{timeZone:timezone,hour:"2-digit",minute:"2-digit"});
   const days=slots.reduce<Array<{key:string;label:string;slots:string[]}>>((groups,slot)=>{
     const date=new Date(slot);
     const key=dayKeyFormatter.format(date);
@@ -36,10 +36,10 @@ export function BookingForm({ slug, timezone, availabilityDays }: { slug:string;
     return groups;
   },[]);
   return <form onSubmit={submit}>
-    <div className="slot-picker"><h3>Выберите время</h3>{loading ? <p>Проверяем календарь…</p> : error ? null : days.length ? <div className="slot-days">{days.map(day=><section className="slot-day" key={day.key}><h4>{day.label}</h4><div className="slot-times">{day.slots.map(slot=><button type="button" key={slot} className={`slot ${selected===slot?"selected":""}`} onClick={()=>setSelected(slot)}>{timeFormatter.format(new Date(slot))}</button>)}</div></section>)}</div> : <p>Свободных окон на ближайшие {availabilityDays} дней нет.</p>}</div>
-    <label>Ваше имя<input name="guestName" required /></label>
+    <div className="slot-picker"><h3>Оберіть час</h3>{loading ? <p>Перевіряємо календар…</p> : error ? null : days.length ? <div className="slot-days">{days.map(day=><section className="slot-day" key={day.key}><h4>{day.label}</h4><div className="slot-times">{day.slots.map(slot=><button type="button" key={slot} className={`slot ${selected===slot?"selected":""}`} onClick={()=>setSelected(slot)}>{timeFormatter.format(new Date(slot))}</button>)}</div></section>)}</div> : <p>Вільних слотів на найближчі {availabilityDays} днів немає.</p>}</div>
+    <label>Ваше ім’я<input name="guestName" required /></label>
     <label>Email<input name="guestEmail" type="email" required /></label>
-    <label>Комментарий<textarea name="notes" rows={3} /></label>
-    {error && <span className="error">{error}</span>}<button disabled={loading || !slots.length || submitting}>{submitting ? "Бронируем…" : "Забронировать"}</button>
+    <label>Коментар<textarea name="notes" rows={3} /></label>
+    {error && <span className="error">{error}</span>}<button disabled={loading || !slots.length || submitting}>{submitting ? "Бронюємо…" : "Забронювати"}</button>
   </form>;
 }

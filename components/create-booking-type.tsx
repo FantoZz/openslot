@@ -16,20 +16,20 @@ export function CreateBookingType() {
     event.currentTarget.reset(); router.refresh();
   }
   return <form onSubmit={submit}>
-    <label>Название<input name="title" required placeholder="Собеседование с лидом" /></label>
-    <label>Адрес ссылки<input name="slug" required pattern="[a-z0-9-]+" placeholder="lead-interview" /></label>
-    <label>Описание<textarea name="description" rows={3} placeholder="Обсудим задачу и следующие шаги" /></label>
+    <label>Назва<input name="title" required placeholder="Співбесіда з кандидатом" /></label>
+    <label>Адреса посилання<input name="slug" required pattern="[a-z0-9-]+" placeholder="interview" /></label>
+    <label>Опис<textarea name="description" rows={3} placeholder="Обговоримо досвід і наступні кроки" /></label>
     <div className="row">
-      <label>Длительность<select name="durationMin" defaultValue="60"><option value="30">30 минут</option><option value="45">45 минут</option><option value="60">1 час</option><option value="90">1,5 часа</option></select></label>
-      <label>Часовой пояс<input name="timezone" defaultValue="Europe/Kyiv" /></label>
+      <label>Тривалість<select name="durationMin" defaultValue="60"><option value="30">30 хвилин</option><option value="45">45 хвилин</option><option value="60">1 година</option><option value="90">1,5 години</option></select></label>
+      <label>Часовий пояс<input name="timezone" defaultValue="Europe/Kyiv" /></label>
     </div>
-    <label>Доступные слоты вперёд<select name="availabilityDays" defaultValue="14"><option value="7">7 дней</option><option value="14">14 дней</option><option value="30">30 дней</option><option value="60">60 дней</option><option value="90">90 дней</option></select></label>
+    <label>Доступні слоти наперед<select name="availabilityDays" defaultValue="14"><option value="7">7 днів</option><option value="14">14 днів</option><option value="30">30 днів</option><option value="60">60 днів</option><option value="90">90 днів</option></select></label>
     <div className="row">
-      <label>Начало рабочего дня<input name="startHour" type="number" min="0" max="23" defaultValue="9" /></label>
-      <label>Конец рабочего дня<input name="endHour" type="number" min="1" max="24" defaultValue="18" /></label>
+      <label>Початок робочого дня<input name="startHour" type="number" min="0" max="23" defaultValue="9" /></label>
+      <label>Кінець робочого дня<input name="endHour" type="number" min="1" max="24" defaultValue="18" /></label>
     </div>
-    <label className="checkbox"><input name="includeWeekends" type="checkbox" />Включать субботу и воскресенье</label>
+    <label className="checkbox"><input name="includeWeekends" type="checkbox" />Включати суботу та неділю</label>
     {error && <span className="error">{error}</span>}
-    <button disabled={pending}>{pending ? "Создаём…" : "Создать ссылку"}</button>
+    <button disabled={pending}>{pending ? "Створюємо…" : "Створити посилання"}</button>
   </form>;
 }
