@@ -1,4 +1,5 @@
-import { google } from "googleapis";
+import { OAuth2Client } from "googleapis-common";
+import { calendar } from "googleapis/build/src/apis/calendar";
 import { prisma } from "@/lib/prisma";
 
 export async function calendarForUser(userId: string) {
@@ -9,12 +10,12 @@ export async function calendarForUser(userId: string) {
     throw new Error("Google Calendar не подключён. Выйдите и войдите снова, разрешив доступ к календарю.");
   }
 
-  const auth = new google.auth.OAuth2(
+  const auth = new OAuth2Client(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
   );
   auth.setCredentials({ refresh_token: account.refresh_token });
-  return google.calendar({ version: "v3", auth });
+  return calendar({ version: "v3", auth });
 }
 
 export async function getBusy(userId: string, timeMin: Date, timeMax: Date) {
