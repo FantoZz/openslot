@@ -14,6 +14,7 @@ export default async function Home() {
       <span className="eyebrow">MATAS University</span>
       <h1>OpenSlot — планувальник зустрічей</h1>
       <p>OpenSlot допомагає організаторам створювати сторінки бронювання, а гостям — обирати вільний час без листування. Після бронювання сервіс створює подію в Google Calendar і посилання Google Meet.</p>
+      <p lang="en">OpenSlot is the MATAS University meeting scheduling service. Organizers publish their availability, guests book an open time, and OpenSlot creates the confirmed Google Calendar event with a Google Meet link.</p>
       {session && <Link className="button" href="/dashboard">Відкрити кабінет</Link>}
     </section>
     <section className="grid">
