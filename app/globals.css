@@ -49,4 +49,14 @@ button:disabled { opacity:.55; cursor:not-allowed; }
 .delete-button:hover { background:#ffe9ed; color:#b3263e; }
 .booking-shell { max-width:760px; }
 .booking-title { font-size:48px; }
+.google-data-note { max-width:800px; margin:56px 0 0; }
+.google-data-note h2 { margin-bottom:8px; }
+.site-footer { display:flex; flex-wrap:wrap; gap:14px 24px; margin-top:56px; padding-top:24px; border-top:1px solid var(--line); color:var(--muted); font-size:14px; }
+.site-footer span { margin-right:auto; }
+.legal-page { max-width:860px; }
+.legal-page .nav { margin-bottom:32px; }
+.legal-card { padding:clamp(24px,5vw,52px); }
+.legal-card h1 { font-size:clamp(42px,6vw,64px); }
+.legal-card h2 { margin-top:36px; font-size:23px; }
+.legal-card li { margin:8px 0; color:var(--muted); line-height:1.6; }
 @media(max-width:600px){ .shell{padding-top:24px}.nav{margin-bottom:36px}.row{grid-template-columns:1fr}.brand-logo img{width:143px;height:32px}.hero-mark{right:-80px}.dashboard-title{font-size:42px}.booking-title{font-size:40px} }

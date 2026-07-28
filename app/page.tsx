@@ -21,5 +21,15 @@ export default async function Home() {
       <div className="card"><h3>Google Meet</h3><p>Посилання на відеозустріч створюється разом із подією.</p></div>
       <div className="card"><h3>Одне посилання</h3><p>Необмежена кількість гостей може бронювати різні доступні слоти.</p></div>
     </section>
+    <section className="google-data-note">
+      <h2>Як OpenSlot використовує Google Calendar</h2>
+      <p>OpenSlot перевіряє зайняті проміжки календаря організатора, щоб не пропонувати гостям час із конфліктами, та створює підтверджені зустрічі з Google Meet. Дані календаря не використовуються для реклами й не продаються.</p>
+    </section>
+    <footer className="site-footer">
+      <span>© {new Date().getFullYear()} MATAS University</span>
+      <Link href="/privacy">Політика конфіденційності</Link>
+      <Link href="/terms">Умови використання</Link>
+      <a href="mailto:yevgeniif@gmail.com">Підтримка</a>
+    </footer>
   </main>;
 }
