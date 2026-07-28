@@ -11,9 +11,9 @@ export default async function Home() {
     <nav className="nav"><BrandLogo /><AuthButton signedIn={!!session} /></nav>
     <section className="hero">
       <Image className="hero-mark" src="/matas-mark.svg" alt="" width={153} height={177} aria-hidden="true" />
-      <span className="eyebrow">MATAS University Planner</span>
-      <h1>Зустрічі без листування про вільний час.</h1>
-      <p>Створіть формат зустрічі та надішліть одне посилання. Кожен гість обере власний вільний слот, а Google Calendar додасть подію та Google Meet.</p>
+      <span className="eyebrow">MATAS University</span>
+      <h1>OpenSlot — планувальник зустрічей</h1>
+      <p>OpenSlot допомагає організаторам створювати сторінки бронювання, а гостям — обирати вільний час без листування. Після бронювання сервіс створює подію в Google Calendar і посилання Google Meet.</p>
       {session && <Link className="button" href="/dashboard">Відкрити кабінет</Link>}
     </section>
     <section className="grid">
