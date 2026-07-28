@@ -14,7 +14,24 @@ export async function calendarForUser(userId: string) {
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
   );
-  auth.setCredentials({ refresh_token: account.refresh_token });
+  auth.setCredentials({
+    access_token: account.access_token,
+    refresh_token: account.refresh_token,
+    expiry_date: account.expires_at ? account.expires_at * 1000 : undefined,
+  });
+  auth.on("tokens", (tokens) => {
+    if (!tokens.refresh_token) return;
+    void prisma.account.update({
+      where: { id: account.id },
+      data: {
+        refresh_token: tokens.refresh_token,
+        access_token: tokens.access_token,
+        expires_at: tokens.expiry_date
+          ? Math.floor(tokens.expiry_date / 1000)
+          : undefined,
+      },
+    }).catch((error) => console.error("Failed to save rotated Google token", error));
+  });
   return calendar({ version: "v3", auth });
 }
 
