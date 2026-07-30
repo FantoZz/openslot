@@ -1,7 +1,7 @@
 "use client";
 import { FormEvent, useEffect, useState } from "react";
 
-export function BookingForm({ slug, timezone, availabilityDays }: { slug:string; timezone:string; availabilityDays:number }) {
+export function BookingForm({ slug, timezone, availabilityDays, availabilityDate }: { slug:string; timezone:string; availabilityDays:number; availabilityDate?:string | null }) {
   const [slots,setSlots] = useState<string[]>([]); const [selected,setSelected] = useState("");
   const [loading,setLoading] = useState(true); const [submitting,setSubmitting] = useState(false); const [error,setError] = useState(""); const [done,setDone] = useState<{meetUrl?:string} | null>(null);
   async function readJson(response: Response) {
@@ -36,7 +36,7 @@ export function BookingForm({ slug, timezone, availabilityDays }: { slug:string;
     return groups;
   },[]);
   return <form onSubmit={submit}>
-    <div className="slot-picker"><h3>Оберіть час</h3>{loading ? <p>Перевіряємо календар…</p> : error ? null : days.length ? <div className="slot-days">{days.map(day=><section className="slot-day" key={day.key}><h4>{day.label}</h4><div className="slot-times">{day.slots.map(slot=><button type="button" key={slot} className={`slot ${selected===slot?"selected":""}`} onClick={()=>setSelected(slot)}>{timeFormatter.format(new Date(slot))}</button>)}</div></section>)}</div> : <p>Вільних слотів на найближчі {availabilityDays} днів немає.</p>}</div>
+    <div className="slot-picker"><h3>Оберіть час</h3>{loading ? <p>Перевіряємо календар…</p> : error ? null : days.length ? <div className="slot-days">{days.map(day=><section className="slot-day" key={day.key}><h4>{day.label}</h4><div className="slot-times">{day.slots.map(slot=><button type="button" key={slot} className={`slot ${selected===slot?"selected":""}`} onClick={()=>setSelected(slot)}>{timeFormatter.format(new Date(slot))}</button>)}</div></section>)}</div> : <p>{availabilityDate ? "На вибрану дату вільних слотів немає." : `Вільних слотів на найближчі ${availabilityDays} днів немає.`}</p>}</div>
     <label>Ваше ім’я<input name="guestName" required /></label>
     <label>Email<input name="guestEmail" type="email" required /></label>
     <label>Коментар<textarea name="notes" rows={3} /></label>

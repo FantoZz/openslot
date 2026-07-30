@@ -26,6 +26,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
     if (start <= DateTime.utc()) {
       return NextResponse.json({ error: "Цей час уже минув" }, { status: 409 });
     }
+    if (type.availabilityDate && start.setZone(type.timezone).toISODate() !== type.availabilityDate) {
+      return NextResponse.json({ error: "Цей час не належить до вибраної дати." }, { status: 409 });
+    }
 
     const [calendarAvailability, existing] = await Promise.all([
       type.availabilityMode === "EVENT" && type.sourceEventTitle

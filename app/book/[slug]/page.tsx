@@ -78,6 +78,7 @@ export default async function BookingPage({ params }: BookingPageProps) {
           slug={type.slug}
           timezone={type.timezone}
           availabilityDays={type.availabilityDays}
+          availabilityDate={type.availabilityDate}
         />
       </section>
     </main>

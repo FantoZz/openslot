@@ -61,6 +61,7 @@ model BookingType {
   description String?
   durationMin Int       @default(60)
   availabilityDays Int  @default(14)
+  availabilityDate String?
   timezone    String    @default("Europe/Kyiv")
   startHour   Int       @default(9)
   endHour     Int       @default(18)

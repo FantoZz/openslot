@@ -10,8 +10,16 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
     const { slug } = await params;
     const type = await prisma.bookingType.findUnique({ where: { slug } });
     if (!type?.active) return NextResponse.json({ error: "Not found" }, { status: 404 });
-    const from = DateTime.now().setZone(type.timezone).startOf("day");
-    const until = from.plus({ days: type.availabilityDays });
+    const today = DateTime.now().setZone(type.timezone).startOf("day");
+    const requestedDate = type.availabilityDate
+      ? DateTime.fromISO(type.availabilityDate, { zone: type.timezone }).startOf("day")
+      : null;
+    if (requestedDate && requestedDate < today) {
+      return NextResponse.json({ timezone: type.timezone, slots: [] });
+    }
+    const from = requestedDate ?? today;
+    const days = requestedDate ? 1 : type.availabilityDays;
+    const until = from.plus({ days });
     const [calendarAvailability, bookings] = await Promise.all([
       type.availabilityMode === "EVENT" && type.sourceEventTitle
         ? getCalendarWindows(type.userId, type.sourceEventTitle, from.toJSDate(), until.toJSDate())
@@ -29,7 +37,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
       timezone: type.timezone,
       slots: buildSlots({
         from,
-        days: type.availabilityDays,
+        days,
         durationMin: type.durationMin,
         timezone: type.timezone,
         startHour: type.availabilityMode === "EVENT" ? 0 : type.startHour,

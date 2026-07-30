@@ -9,6 +9,7 @@ export function CreateBookingType() {
   const [pending, setPending] = useState(false);
   const [includeWeekends, setIncludeWeekends] = useState(false);
   const [availabilityMode, setAvailabilityMode] = useState<"FREE" | "EVENT">("FREE");
+  const [dateMode, setDateMode] = useState<"RANGE" | "DATE">("RANGE");
   const [eventQuery, setEventQuery] = useState("");
   const [eventTitles, setEventTitles] = useState<string[]>([]);
   const [searchingEvents, setSearchingEvents] = useState(false);
@@ -59,6 +60,7 @@ export function CreateBookingType() {
     form.reset();
     setIncludeWeekends(false);
     setAvailabilityMode("FREE");
+    setDateMode("RANGE");
     setEventQuery("");
     router.refresh();
   }
@@ -68,10 +70,26 @@ export function CreateBookingType() {
     <label>Адреса посилання <span className="optional">(необов’язково)</span><input name="slug" pattern="[a-z0-9-]+" placeholder="Згенерується автоматично" /></label>
     <label>Опис <span className="optional">(необов’язково)</span><textarea name="description" rows={3} placeholder="Обговоримо досвід і наступні кроки" /></label>
     <div className="row">
-      <label>Тривалість<select name="durationMin" defaultValue="60"><option value="30">30 хвилин</option><option value="45">45 хвилин</option><option value="60">1 година</option><option value="90">1,5 години</option></select></label>
+      <label>Тривалість, годин<input name="durationHours" type="number" min="0.25" max="12" step="0.25" defaultValue="1" required /></label>
       <label>Часовий пояс<input name="timezone" defaultValue="Europe/Kyiv" /></label>
     </div>
-    <label>Доступні слоти наперед<select name="availabilityDays" defaultValue="14"><option value="1">Сьогодні</option><option value="2">2 дні</option><option value="3">3 дні</option><option value="7">7 днів</option><option value="14">14 днів</option></select></label>
+    <fieldset className="mode-options">
+      <legend>Коли показувати доступні слоти</legend>
+      <label className="radio-option">
+        <input type="radio" checked={dateMode === "RANGE"} onChange={() => setDateMode("RANGE")} />
+        <span><strong>На кілька днів наперед</strong><small>Відлік починається в день відкриття посилання.</small></span>
+      </label>
+      <label className="radio-option">
+        <input type="radio" checked={dateMode === "DATE"} onChange={() => setDateMode("DATE")} />
+        <span><strong>Один конкретний день</strong><small>Гості побачать слоти лише на вибрану дату.</small></span>
+      </label>
+    </fieldset>
+    {dateMode === "RANGE"
+      ? <label>Доступні слоти наперед<select name="availabilityDays" defaultValue="14"><option value="1">Сьогодні</option><option value="2">2 дні</option><option value="3">3 дні</option><option value="7">7 днів</option><option value="14">14 днів</option></select></label>
+      : <>
+        <label>Дата зустрічі<input name="availabilityDate" type="date" min={new Date().toISOString().slice(0, 10)} required /></label>
+        <input name="availabilityDays" type="hidden" value="1" />
+      </>}
 
     <fieldset className="mode-options">
       <legend>Як визначати доступний час</legend>
