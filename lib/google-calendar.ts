@@ -46,3 +46,60 @@ export async function getBusy(userId: string, timeMin: Date, timeMax: Date) {
   });
   return response.data.calendars?.primary?.busy ?? [];
 }
+
+export async function findCalendarEventTitles(
+  userId: string,
+  query: string,
+  timeMin: Date,
+  timeMax: Date,
+) {
+  const client = await calendarForUser(userId);
+  const response = await client.events.list({
+    calendarId: "primary",
+    q: query,
+    timeMin: timeMin.toISOString(),
+    timeMax: timeMax.toISOString(),
+    singleEvents: true,
+    orderBy: "startTime",
+    maxResults: 50,
+  });
+  return Array.from(
+    new Set(
+      (response.data.items ?? [])
+        .filter((event) => event.status !== "cancelled" && event.summary)
+        .map((event) => event.summary!.trim()),
+    ),
+  ).slice(0, 12);
+}
+
+export async function getCalendarWindows(
+  userId: string,
+  eventTitle: string,
+  timeMin: Date,
+  timeMax: Date,
+) {
+  const client = await calendarForUser(userId);
+  const response = await client.events.list({
+    calendarId: "primary",
+    timeMin: timeMin.toISOString(),
+    timeMax: timeMax.toISOString(),
+    singleEvents: true,
+    orderBy: "startTime",
+    maxResults: 2500,
+  });
+  const target = eventTitle.trim().toLocaleLowerCase();
+  const allowed: Array<{ start: string; end: string }> = [];
+  const busy: Array<{ start: string; end: string }> = [];
+
+  for (const event of response.data.items ?? []) {
+    const start = event.start?.dateTime;
+    const end = event.end?.dateTime;
+    if (event.status === "cancelled" || !start || !end) continue;
+    if (event.summary?.trim().toLocaleLowerCase() === target) {
+      allowed.push({ start, end });
+    } else if (event.transparency !== "transparent") {
+      busy.push({ start, end });
+    }
+  }
+  return { allowed, busy };
+}

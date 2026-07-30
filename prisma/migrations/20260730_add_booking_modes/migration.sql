@@ -1,0 +1,4 @@
+ALTER TABLE "BookingType"
+ADD COLUMN "availabilityMode" TEXT NOT NULL DEFAULT 'FREE',
+ADD COLUMN "sourceEventTitle" TEXT,
+ADD COLUMN "singleUse" BOOLEAN NOT NULL DEFAULT false;

@@ -11,6 +11,8 @@ Production: [https://openslot.matasuniversity.com](https://openslot.matasunivers
 - вхід організатора через Google OAuth;
 - необмежена кількість бронювань через одне посилання;
 - автоматична перевірка зайнятості Google Calendar;
+- зворотний режим доступності: слоти лише всередині подій із вибраною назвою;
+- одноразові посилання, які закриваються після першого успішного бронювання;
 - захист від подвійного бронювання;
 - створення події, Google Meet та email-запрошення;
 - окремий горизонт доступності: сьогодні, 2, 3, 7 або 14 днів;
@@ -77,10 +79,11 @@ http://localhost:3000/api/auth/callback/google
 https://openslot.matasuniversity.com/api/auth/callback/google
 ```
 
-Google Calendar API має бути увімкнений, а OAuth-клієнт повинен мати scope:
+Google Calendar API має бути увімкнений, а OAuth-клієнт повинен мати scopes:
 
 ```text
-https://www.googleapis.com/auth/calendar
+https://www.googleapis.com/auth/calendar.freebusy
+https://www.googleapis.com/auth/calendar.events
 ```
 
 ## Production на HomePI4YF

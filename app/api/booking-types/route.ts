@@ -17,6 +17,9 @@ const schema = z.object({
   weekendStartHour: z.coerce.number().int().min(0).max(23).default(10),
   weekendEndHour: z.coerce.number().int().min(1).max(24).default(16),
   includeWeekends: z.boolean().default(false),
+  availabilityMode: z.enum(["FREE", "EVENT"]),
+  sourceEventTitle: z.string().max(200).optional(),
+  singleUse: z.boolean().default(false),
 });
 
 export async function POST(request: Request) {
@@ -26,7 +29,8 @@ export async function POST(request: Request) {
   if (
     !parsed.success ||
     parsed.data.startHour >= parsed.data.endHour ||
-    (parsed.data.includeWeekends && parsed.data.weekendStartHour >= parsed.data.weekendEndHour)
+    (parsed.data.includeWeekends && parsed.data.weekendStartHour >= parsed.data.weekendEndHour) ||
+    (parsed.data.availabilityMode === "EVENT" && !parsed.data.sourceEventTitle?.trim())
   ) {
     return NextResponse.json({ error: "Перевірте заповнені поля" }, { status: 400 });
   }
@@ -39,6 +43,7 @@ export async function POST(request: Request) {
         ...data,
         slug,
         description: data.description || null,
+        sourceEventTitle: data.availabilityMode === "EVENT" ? data.sourceEventTitle?.trim() : null,
         weekdays: includeWeekends ? [1, 2, 3, 4, 5, 6, 7] : [1, 2, 3, 4, 5],
         userId: user.id,
       },

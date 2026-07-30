@@ -67,6 +67,9 @@ model BookingType {
   weekendStartHour Int  @default(10)
   weekendEndHour   Int  @default(16)
   weekdays    Int[]     @default([1, 2, 3, 4, 5])
+  availabilityMode String @default("FREE")
+  sourceEventTitle String?
+  singleUse        Boolean @default(false)
   active      Boolean   @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt

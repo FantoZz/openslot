@@ -13,6 +13,7 @@ export function buildSlots(input: {
   weekendEndHour: number;
   weekdays: number[];
   busy: Busy[];
+  allowed?: Busy[];
 }) {
   const slots: string[] = [];
   const now = DateTime.utc().plus({ minutes: 15 });
@@ -31,7 +32,11 @@ export function buildSlots(input: {
         if (!item.start || !item.end) return false;
         return start < DateTime.fromISO(item.end) && end > DateTime.fromISO(item.start);
       });
-      if (start > now && !overlaps) slots.push(start.toISO()!);
+      const isAllowed = !input.allowed || input.allowed.some((item) => {
+        if (!item.start || !item.end) return false;
+        return start >= DateTime.fromISO(item.start) && end <= DateTime.fromISO(item.end);
+      });
+      if (start > now && !overlaps && isAllowed) slots.push(start.toISO()!);
       cursor = cursor.plus({ minutes: input.durationMin });
     }
   }
