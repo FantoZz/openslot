@@ -3,6 +3,7 @@ import { DateTime } from "luxon";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { calendarApiError } from "@/lib/api-error";
+import { sendBookingNotification } from "@/lib/email";
 import { calendarForUser, getBusy, getCalendarWindows } from "@/lib/google-calendar";
 import { prisma } from "@/lib/prisma";
 
@@ -106,6 +107,20 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
           meetUrl: event.data.hangoutLink,
         },
       });
+      if (type.user.email) {
+        await sendBookingNotification({
+          organizerEmail: type.user.email,
+          bookingTitle: type.title,
+          guestName: booking.guestName,
+          guestEmail: booking.guestEmail,
+          notes: booking.notes,
+          startsAt: booking.startsAt,
+          endsAt: booking.endsAt,
+          timezone: type.timezone,
+          meetUrl: booking.meetUrl,
+          calendarUrl: event.data.htmlLink,
+        }).catch((error) => console.error("Failed to send booking notification", error));
+      }
       return NextResponse.json({ id: booking.id, meetUrl: booking.meetUrl, startsAt: booking.startsAt });
     } catch (error) {
       console.error("Failed to save booking", error);
